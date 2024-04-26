@@ -12,7 +12,7 @@ app.get("/scrape", (req, res) => {
         // Your scraping logic here
         // Example: Get the title of the page
         const pageTitle = $('.h1-style .text-dark-blue').text();
-        console.log('Page Title:', pageTitle);
+        // console.log('Page Title:', pageTitle);
         res.json({ pageHeading: pageTitle });
     })
     .catch(error => {
@@ -20,6 +20,6 @@ app.get("/scrape", (req, res) => {
     });
 });
 
-app.listen(9001, () => console.log("Server ready on port 9001."));
+app.listen(3000, () => console.log("Server ready on port 3000."));
 
 module.exports = app;
