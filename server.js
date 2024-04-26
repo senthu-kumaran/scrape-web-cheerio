@@ -10,14 +10,14 @@ const port = process.env.PORT || 3000;
 app.get('/scrape', (req, res) => {
     axios.get(req.query.url)
     .then(response => {
-        const html = response.data;
-        const $ = cheerio.load(html);
+        // const html = response.data;
+        // const $ = cheerio.load(html);
 
-        // Your scraping logic here
-        // Example: Get the title of the page
-        const pageTitle = $('.h1-style .text-dark-blue').text();
-        console.log('Page Title:', pageTitle);
-        res.json({ pageHeading: pageTitle });
+        // // Your scraping logic here
+        // // Example: Get the title of the page
+        // const pageTitle = $('.h1-style .text-dark-blue').text();
+        // console.log('Page Title:', pageTitle);
+        res.json({ pageHeading: "pageTitle" });
     })
     .catch(error => {
         console.log('Error fetching the page:', error);
