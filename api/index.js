@@ -6,52 +6,56 @@ const cheerio = require('cheerio');
 app.get("/scrape", (req, res) => {
 
     var requestURL = req.query.url
-    axios.get(req.query.url)
-    .then(response => {
+    axios.get(req.query.url).then(response => {
         const html = response.data;
         const $ = cheerio.load(html);
-
-        // Your scraping logic here
-        // Example: Get the title of the page
-        // const pageTitle = $('.h1-style .text-dark-blue').text();
-        // let getHTML = $(".cmp-container .fmcna-freseniuscontainer").map((i, el)=>{
-        //     return $(el).find('h1').text();
-        // }).get(0);
-        // console.log(getHTML);
-
-        // const relateArticle = $('.cmp-container .fmcna-freseniuscontainer').map((i, section) => {
-        //     let articles = $(section).find('h1');
-        //     return articles.text().trim();
-        // }).get(0)
-        
-        // console.log(relateArticle) 
-
-        
+                
         var pageHostURL = new URL(requestURL),
-            pageHostURL = pageHostURL.protocol+'//'+pageHostURL.hostname
+            pageHostURL = pageHostURL.protocol+'//'+pageHostURL.hostname,
+            isMultipleImageSrc = true;   
 
-        const pageTitle = $('#pageHeading h1').text().trim();
-        const pageHeadingImageURL = $('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('.fmcna-image img').attr('src')
-        const pageContent = $('.cmp-articlecomponent__content').html().trim().replace(/\n/g, '')
-        const socialShareURLs = $('.cmp-socialshare__list li').map((i, el)=>{
-            console.log(i)
-            var returnString = i == 1 ? requestURL : $(el).find('a').attr('href')
-            return returnString;
-        }).toArray();
+        const isPictureMode = $('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture').html(), pageHeadingImageURL = []  
+        if(!isPictureMode){
+            isMultipleImageSrc = false;
+            pushToArray(pageHeadingImageURL, "img",pageHostURL+$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('.cmp-image__image').attr('src'))
+        }else{
+            pushToArray(pageHeadingImageURL, "img",pageHostURL + $('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture img').attr('src'))
+            pushToArray(pageHeadingImageURL, "media_768",$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:768px"]').attr('srcset'))
+            pushToArray(pageHeadingImageURL, "media_991",$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:991px"]').attr('srcset'))
+        }
 
-        // $("#block-zircon-content tbody tr td").map((i, el)=>{
-        //     return el;
-        // }).toArray();
+        const pageTitle = $('#pageHeading h1').text().trim(),
+            pageContent = $('.cmp-articlecomponent__content').html().trim().replace(/\n/g, ''),
+            socialShareURLs = []
 
-    
-        // console.log($('.cmp-container .fmcna-freseniuscontainer').html().toString())
+        $('.cmp-socialshare__list li').map((i, el)=>{
+            var link, id = $(el).find('a').attr('id')
+            console.log(id)
+            link = (id == 'Clipboard') ? requestURL: $(el).find('a').attr('href')
+            pushToArray(socialShareURLs, id,link)
+        })
 
-        res.json({ pageURL: req.query.url,pageHeading: pageTitle , pageHeadingImageURL: pageHostURL+pageHeadingImageURL,socialShareURL: socialShareURLs, pageContent: pageContent});
+        res.json({ 
+            pageURL: req.query.url, 
+            isMultipleImageSrc: isMultipleImageSrc, 
+            pageHeading: pageTitle, 
+            pageHeadingImageURL: pageHeadingImageURL, 
+            socialShareURL: socialShareURLs, 
+            pageContent: pageContent
+        });
+
     })
     .catch(error => {
         console.log('Error fetching the page:', error);
     });
 });
+
+
+function pushToArray(array, name, val) {
+    var obj = {};
+    obj[name] = val;
+    array.push(obj);
+}
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
