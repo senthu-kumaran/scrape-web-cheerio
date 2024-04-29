@@ -29,7 +29,9 @@ app.get("/scrape", (req, res) => {
             socialShareURLs = []
 
         $('.cmp-socialshare__list li').map((i, el)=>{
-            if(id != 'Clipboard') pushToArray(socialShareURLs, $(el).find('a').attr('id'),$(el).find('a').attr('href'))
+            if($(el).find('a').attr('id') != 'Clipboard'){
+                pushToArray(socialShareURLs, $(el).find('a').attr('id'),$(el).find('a').attr('href'))
+            }
         })
 
         res.json({ 
