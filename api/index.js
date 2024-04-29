@@ -3,6 +3,9 @@ const app = express();
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+// enabling CORS for any unknown origin(https://xyz.example.com) 
+app.use(cors());
+
 app.get("/scrape", (req, res) => {
 
     var requestURL = req.query.url
