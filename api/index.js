@@ -7,26 +7,26 @@ const cors = require('cors')
 
 // enabling CORS for any unknown origin(https://xyz.example.com) 
 app.use(cors());
-
+var requestURL, pageHostURL;
 app.get("/scrape", (req, res) => {
 
-    var requestURL = req.query.url
+    requestURL = req.query.url
     axios.get(req.query.url).then(response => {
         const html = response.data;
         const $ = cheerio.load(html);
                 
-        var pageHostURL = new URL(requestURL),
-            pageHostURL = pageHostURL.protocol+'//'+pageHostURL.hostname,
-            isMultipleImageSrc = true;   
+        pageHostURL = new URL(requestURL),
+        pageHostURL = pageHostURL.protocol+'//'+pageHostURL.hostname,
+        isMultipleImageSrc = true;   
 
         const isPictureMode = $('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture').html(), pageHeadingImageURL = []  
         if(!isPictureMode){
             isMultipleImageSrc = false;
-            pushToArray(pageHeadingImageURL, "img",pageHostURL+$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('.cmp-image__image').attr('src'))
+            pushToArray(pageHeadingImageURL, "img",checkIfRelativeAbsolute($('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('.cmp-image__image').attr('src')))
         }else{
-            pushToArray(pageHeadingImageURL, "img",pageHostURL + $('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture img').attr('src'))
-            pushToArray(pageHeadingImageURL, "media_768",$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:768px"]').attr('srcset'))
-            pushToArray(pageHeadingImageURL, "media_991",$('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:991px"]').attr('srcset'))
+            pushToArray(pageHeadingImageURL, "img",checkIfRelativeAbsolute($('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture img').attr('src')))
+            pushToArray(pageHeadingImageURL, "media_768",checkIfRelativeAbsolute($('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:768px"]').attr('srcset')))
+            pushToArray(pageHeadingImageURL, "media_991",checkIfRelativeAbsolute($('#pageHeading h1').closest('.fmcna-freseniuscontainer').find('picture source[media="(max-width:991px"]').attr('srcset')))
         }
 
         const pageTitle = $('#pageHeading h1').text().trim(),
@@ -59,6 +59,19 @@ function pushToArray(array, name, val) {
     var obj = {};
     obj[name] = val;
     array.push(obj);
+}
+
+function checkIfRelativeAbsolute(URL){
+    // var absoluteURL = ()
+    // console.log(!(absoluteURL))
+    console.log(URL)
+    if(!URL.indexOf('https://') && !URL.indexOf('http://')){
+        console.log('asdf')
+        return URL
+    }else{
+        console.log('123')
+        return pageHostURL+URL
+    }
 }
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
