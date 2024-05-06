@@ -63,21 +63,25 @@ function pushToArray(array, name, val) {
 function curateImageURL(URL__){
     // var absoluteURL = ()
     // console.log(!(absoluteURL))
+
+    // URL__ = "habc.com"
     console.log(URL__)
 
-    if(isPathAbsolute(URL__)){
-        console.log('relative')
-        return pageHostURL+URL__
-    }else{
+    if(!URL__.indexOf("https://")){
         console.log('absolute')
         return URL__
+    }else{
+        console.log('relative')
+        return pageHostURL+URL__
     }
 }
 
 
-function isPathAbsolute(path) {
-    return new RegExp("^(?:/|.+://)").test(path)
-}
+// function isPathAbsolute(path) {
+//     var returnValue = new RegExp("^(?:/|.+://)").test(path)
+//     console.log("returnValue: "+returnValue)
+//     return returnValue
+// }
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
