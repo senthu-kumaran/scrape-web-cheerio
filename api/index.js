@@ -67,7 +67,7 @@ function curateImageURL(URL__){
     // URL__ = "habc.com"
     console.log(URL__)
 
-    if(!URL__.indexOf("https://")){
+    if(!URL__.indexOf("https://") || !URL__.indexOf("http://")){
         console.log('absolute')
         return URL__
     }else{
