@@ -54,34 +54,20 @@ app.get("/scrape", (req, res) => {
 });
 
 
-function pushToArray(array, name, val) {
+function pushToArray(array, key, val) {
     var obj = {};
-    obj[name] = val;
+    obj[key] = val;
     array.push(obj);
 }
 
 function curateImageURL(URL__){
-    // var absoluteURL = ()
-    // console.log(!(absoluteURL))
-
-    // URL__ = "habc.com"
-    console.log(URL__)
 
     if(!URL__.indexOf("https://") || !URL__.indexOf("http://")){
-        console.log('absolute')
         return URL__
     }else{
-        console.log('relative')
         return pageHostURL+URL__
     }
 }
-
-
-// function isPathAbsolute(path) {
-//     var returnValue = new RegExp("^(?:/|.+://)").test(path)
-//     console.log("returnValue: "+returnValue)
-//     return returnValue
-// }
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
